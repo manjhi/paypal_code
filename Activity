@@ -1,0 +1,46 @@
+
+
+    var REQUEST_OUT = 1234
+
+
+    private fun sendToken(token: String?) {
+        val dropInRequest = DropInRequest().clientToken(token)
+            .vaultCard(true)
+            .collectDeviceData(true)
+            .requestThreeDSecureVerification(false)
+            .maskCardNumber(true)
+            .maskSecurityCode(true)
+            .allowVaultCardOverride(true)
+            .vaultManager(true)
+            .cardholderNameStatus(CardForm.FIELD_OPTIONAL)
+        startActivityForResult(dropInRequest.getIntent(this), REQUEST_OUT)
+    }
+    
+    
+    
+       override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_OUT) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    var result: DropInResult =
+                        data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)!!
+                    var nonce = result.paymentMethodNonce?.nonce
+                    Log.e("NONCE", nonce)
+                    sendNonceToServer(nonce)
+                } catch (e: Exception) {
+
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                "User cancel payment".toast()
+            } else {
+                var exception = data?.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
+                exception.message?.toast()
+                PlaceOder(false, "1", exception.message.toString())
+                Log.e("ERROR", exception.message.toString())
+            }
+
+        }
+
+    }
