@@ -1,0 +1,3 @@
+
+    implementation 'com.braintreepayments.api:drop-in:4.6.0'
+    implementation 'io.card:android-sdk:5.+'
